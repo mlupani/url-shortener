@@ -1,0 +1,71 @@
+---
+
+import { getUrlByUser } from '@/actions/getUrlsByUser';
+import Layout from '@/layouts/Layout.astro';
+import { getSession } from 'auth-astro/server'
+
+const session = await getSession(Astro.request);
+
+const { data: userUrls, error } = await Astro.callAction(getUrlByUser, session?.user?.email ?? '');
+
+if(error){
+    return Astro.redirect('/');
+}
+
+---
+
+<Layout title='Lista de urls generadas'>
+    <div class="container">
+        <h3>Hola, {session?.user?.name}</h3>
+        <img style="border-radius: 50px;margin-left: 10px;" src={session?.user?.image} width="80" height="80" />
+
+        {
+            userUrls?.length === 0 ? (
+                <p>No has generado ninguna url corta, <a href="/">Comienza!</a> </p>
+            ) :
+                <p>Estas son las urls que has generado:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Short Url</th>
+                            <th>Original Url</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {userUrls?.map((url) => (
+                            <tr>
+                                <td><a href={url.short_url}>{url.short_url}</a></td>
+                                <td><a href={url.url}>{url.url}</a></td>
+                                <td>
+                                    {new Date(url.createdAt).toLocaleDateString()} {new Date(url.createdAt).toLocaleTimeString()}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+        }
+
+
+    </div>
+
+</Layout>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+    }
+    p, h3, a {
+        color: white;
+    }
+
+    td, th {
+        border: 1px solid white;
+        padding: 8px;
+        text-align: left;
+        color: white;
+    }
+</style>

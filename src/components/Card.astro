@@ -1,29 +1,25 @@
 ---
-interface Props {
-	title: string;
-	body: string;
-	href: string;
-}
 
-const { href, title, body } = Astro.props;
+import { getSession } from 'auth-astro/server'
+const session = await getSession(Astro.request);
+
 ---
 
-<li class="link-card">
-	<a href={href}>
-		<h2>
-			{title}
-			<span>&rarr;</span>
-		</h2>
-		<p>
-			{body}
-		</p>
-	</a>
-</li>
+<form class="card-form" id="form">
+	<input type="text" class="input" value="" placeholder="Introduce tu URL" />
+	<button type="submit" class="boton" >Obtener link</button>
+	{
+		!session &&
+			<button class="google" type="button">Ingresar con google</button>
+	}
+
+	<div class="results"></div>
+</form>
 <style>
-	.link-card {
+	.card-form {
 		list-style: none;
 		display: flex;
-		padding: 1px;
+		padding: 30px;
 		background-color: #23262d;
 		background-image: none;
 		background-size: 400%;
@@ -31,8 +27,13 @@ const { href, title, body } = Astro.props;
 		background-position: 100%;
 		transition: background-position 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+		justify-content: center;
+		align-items: center;
 	}
-	.link-card > a {
+	.card-form > a {
 		width: 100%;
 		text-decoration: none;
 		line-height: 1.4;
@@ -51,11 +52,105 @@ const { href, title, body } = Astro.props;
 		margin-top: 0.5rem;
 		margin-bottom: 0;
 	}
-	.link-card:is(:hover, :focus-within) {
-		background-position: 0;
-		background-image: var(--accent-gradient);
+
+	.input {
+		width: 100%;
+		padding: 10px;
+		border-radius: 10px;
+		border: 1px solid #ccc;
+		background-color: #23262d;
+		color: white;
 	}
-	.link-card:is(:hover, :focus-within) h2 {
-		color: rgb(var(--accent-light));
+
+	.boton {
+		padding: 10px 20px;
+		border-radius: 10px;
+		border: none;
+		background-color: #4CAF50;
+		color: white;
+		font-size: 16px;
+		cursor: pointer;
+	}
+
+	.results {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.google {
+		padding: 10px 20px;
+		border-radius: 10px;
+		border: none;
+		background-color: #ab031a;
+		color: white;
+		font-size: 16px;
+		cursor: pointer;
 	}
 </style>
+
+<script>
+	import { actions } from "astro:actions";
+	const { signIn } = await import("auth-astro/client")
+	const form = document.getElementById('form') as HTMLFormElement;
+	const input = document.querySelector('.input') as HTMLInputElement;
+	const boton = document.querySelector('.boton') as HTMLButtonElement;
+	const results = document.querySelector('.results') as HTMLDivElement;
+	const googleBtn = document.querySelector('.google') as HTMLDivElement;
+	form?.addEventListener('submit', async (event) => {
+		boton.disabled = true;
+		event.preventDefault();
+		const url = input.value;
+
+		if(!url){
+			alert('Debes ingresar una URL');
+			boton.disabled = false;
+			return;
+		}
+
+		// check is valid url
+		const validUrl = new RegExp(
+			/^(ftp|http|https):\/\/[^ "]+$/
+		);
+
+		if(!validUrl.test(url)){
+			alert('Debes ingresar una URL válida');
+			boton.disabled = false;
+			return;
+		}
+
+		const slug = url.split('/')[2].split('.').length > 2 ? url.split('/')[2].split('.')[1] : url.split('/')[2].split('.')[0];
+		const { data, error } = await actions.crearShortenerURL({
+			url,
+			slug
+		})
+		if(error) {
+			alert('Error al acortar la URL');
+			boton.disabled = false;
+			return;
+		}
+		boton.disabled = false;
+
+		const h2 = document.createElement('h2');
+		const a = document.createElement('a');
+		a.style.color = 'white';
+		a.href = `${data.short_url}`;
+		a.textContent = data.short_url;
+		a.target = '_blank';
+		h2.textContent = 'URL acortada';
+		results.appendChild(h2);
+		results.appendChild(a);
+	});
+
+	googleBtn?.addEventListener("click", async (e) => {
+		e.preventDefault();
+
+		googleBtn.setAttribute("disabled", "disabled");
+		await signIn("google", {
+			callbackUrl: "/profile",
+			redirect: true,
+			//redirectTo: "/profile",
+		});
+	});
+
+</script>

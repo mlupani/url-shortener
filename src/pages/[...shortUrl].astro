@@ -1,0 +1,15 @@
+---
+import { actions } from "astro:actions";
+
+const { shortUrl } = Astro.params;
+
+const { data, error } = await Astro.callAction(actions.getUrlByShortenedUrl, shortUrl ?? '');
+
+if(error || !data) {
+    return Astro.redirect('/');
+}
+
+return Astro.redirect(data);
+
+---
+

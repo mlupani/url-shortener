@@ -1,0 +1,56 @@
+---
+import { getSession } from 'auth-astro/server'
+const session = await getSession(Astro.request);
+---
+
+
+<!-- crear navbar -->
+<header>
+  <nav>
+    <ul>
+      {
+        session ? (
+            <li><a href="/">Home</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a class="logout" href="/logout">Logout</a></li>
+        ) : null
+      }
+    </ul>
+  </nav>
+</header>
+
+<style>
+  header {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+  }
+
+  nav ul {
+    display: flex;
+    justify-content: flex-end;
+    list-style: none;
+    gap: 20px;
+  }
+
+  nav ul li {
+    margin-right: 10px;
+  }
+
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+  }
+</style>
+
+<script>
+    const logoutBtn = document.querySelector('.logout') as HTMLAnchorElement;
+    const { signOut } = await import("auth-astro/client")
+    logoutBtn?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await signOut();
+        window.location.replace('/');
+    });
+</script>
+
+
