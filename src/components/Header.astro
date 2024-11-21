@@ -1,23 +1,22 @@
 ---
 import { getSession } from 'auth-astro/server'
 const session = await getSession(Astro.request);
+import { Icon } from 'astro-icon/components'
 ---
 
 
-<!-- crear navbar -->
-<header>
-  <nav>
-    <ul>
-      {
-        session ? (
-            <li><a href="/">Home</a></li>
-            <li><a href="/profile">Profile</a></li>
-            <li><a class="logout" href="/logout">Logout</a></li>
-        ) : null
-      }
-    </ul>
-  </nav>
-</header>
+{
+  session &&
+    <header>
+      <nav>
+        <ul>
+          <li><a title="Home" href="/"><Icon class="icon" name="home" /></a></li>
+          <li><a title="Profile" href="/profile"><Icon class="icon" name="user" /></a></li>
+          <li><a title="Logout" class="logout" href="/logout"><Icon class="icon" name="logout" /></a></li>
+        </ul>
+      </nav>
+    </header>
+}
 
 <style>
   header {
@@ -40,6 +39,10 @@ const session = await getSession(Astro.request);
   nav ul li a {
     color: white;
     text-decoration: none;
+  }
+  .icon {
+    width: 25px;
+    height: 25px;
   }
 </style>
 

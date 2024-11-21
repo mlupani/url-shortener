@@ -76,6 +76,9 @@ const session = await getSession(Astro.request);
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
+		/* fade in */
+		opacity: 0;
+		transition: opacity 2s cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
 	.google {
@@ -131,6 +134,8 @@ const session = await getSession(Astro.request);
 		}
 		boton.disabled = false;
 
+		results.innerHTML = '';
+
 		const h2 = document.createElement('h2');
 		const a = document.createElement('a');
 		a.style.color = 'white';
@@ -140,6 +145,7 @@ const session = await getSession(Astro.request);
 		h2.textContent = 'URL acortada';
 		results.appendChild(h2);
 		results.appendChild(a);
+		results.style.opacity = "1";
 	});
 
 	googleBtn?.addEventListener("click", async (e) => {

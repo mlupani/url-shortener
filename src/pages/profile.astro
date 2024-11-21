@@ -27,16 +27,16 @@ if(error){
                 <table>
                     <thead>
                         <tr>
-                            <th>Short Url</th>
-                            <th>Original Url</th>
-                            <th>Created At</th>
+                            <th>Url corta</th>
+                            <th>Url original</th>
+                            <th>Fecha de creación</th>
                         </tr>
                     </thead>
                     <tbody>
                         {userUrls?.map((url) => (
                             <tr>
-                                <td><a href={url.short_url}>{url.short_url}</a></td>
-                                <td><a href={url.url}>{url.url}</a></td>
+                                <td><a target="_blank" href={url.short_url}>{url.short_url}</a></td>
+                                <td>{url.url}</td>
                                 <td>
                                     {new Date(url.createdAt).toLocaleDateString()} {new Date(url.createdAt).toLocaleTimeString()}
                                 </td>
