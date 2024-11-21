@@ -7,9 +7,7 @@ const Url = defineTable({
       autoIncrement: true
     }),
     url: column.text(),
-    short_url: column.text({
-      unique: true
-    }),
+    short_url: column.text(),
     createdAt: column.date({
       default: new Date()
     }),
