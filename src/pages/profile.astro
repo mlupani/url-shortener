@@ -36,7 +36,7 @@ if(error){
                         {userUrls?.map((url) => (
                             <tr>
                                 <td><a target="_blank" href={url.short_url}>{url.short_url}</a></td>
-                                <td>{url.url}</td>
+                                <td class="tdurl">{url.url}</td>
                                 <td>
                                     {new Date(url.createdAt).toLocaleDateString()} {new Date(url.createdAt).toLocaleTimeString()}
                                 </td>
@@ -67,5 +67,14 @@ if(error){
         padding: 8px;
         text-align: left;
         color: white;
+    }
+
+    .tdurl {
+        max-width: 500px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: flex;
+        flex-wrap: nowrap;
+        max-height: 80px;
     }
 </style>
