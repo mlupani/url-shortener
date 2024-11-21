@@ -147,8 +147,8 @@ const session = await getSession(Astro.request);
 
 		googleBtn.setAttribute("disabled", "disabled");
 		await signIn("google", {
-			callbackUrl: "/profile",
-			redirect: true,
+			//callbackUrl: "/profile",
+			//redirect: true,
 			//redirectTo: "/profile",
 		});
 	});
